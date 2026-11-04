@@ -43,7 +43,7 @@ airpipe/          本仓库：总览 + 通信协议契约文档
 ```
 
 ```bash
-git clone --recursive <本仓库>
+git clone --recursive https://github.com/morethan987/airpipe.git
 # 或已有 clone 补拉子模块
 git submodule update --init
 ```
