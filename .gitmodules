@@ -1,0 +1,6 @@
+[submodule "pc"]
+	path = pc
+	url = ../airpipe-pc
+[submodule "android"]
+	path = android
+	url = ../airpipe-android
