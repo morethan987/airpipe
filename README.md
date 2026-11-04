@@ -10,6 +10,20 @@
 - 全链路 TLS 1.3 双向证书认证，一次配对永久免配
 - 暂只支持单 PC ↔ 单手机
 
+## 预览
+
+**PC 端（Linux / Wayland）**
+
+| 系统托盘 | CLI |
+| :---: | :---: |
+| <img src="assets/pc_linux_tray.png" width="400" alt="系统托盘菜单"> | <img src="assets/pc_linux_cli.png" width="400" alt="ap 命令行"> |
+
+**Android 端**
+
+| App 主界面 | 常驻通知（点按即同步 / 进度条） |
+| :---: | :---: |
+| <img src="assets/android_app.jpg" width="260" alt="App 主界面与授权引导"> | <img src="assets/android_notification.jpg" width="260" alt="常驻通知"> |
+
 ## 架构
 
 手机 = 主动出站客户端，PC = 监听端（HyperOS 实测静默丢弃 App 入站连接，出站畅通，故别无选择；详见 android_probe 探针结论）。
@@ -37,7 +51,7 @@ sequenceDiagram
 ```
 airpipe/          本仓库：总览 + 通信协议契约文档
 ├── docs/protocol.md   双端共同契约：传输/加密/配对/发现/帧协议
-├── assets/airpipe_logo.png  项目形象图标
+├── assets/            项目图标 + 真机截图
 ├── pc/            submodule → ../airpipe-pc   (Rust, ap 命令 + daemon + 托盘)
 └── android/       submodule → ../airpipe-android (Kotlin, 无三方依赖)
 ```
