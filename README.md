@@ -1,6 +1,6 @@
 # Airpipe
 
-局域网剪贴板 / 文件传输工具。**Air**（无线无缝，向 Apple 致敬）+ **Pipe**（万物皆管道流，向 Unix 致敬）。
+局域网剪贴板 / 文件传输工具。**Air**（无线无缝）+ **Pipe**（万物皆管道流）
 
 - 二进制名 `ap`：正常使用即客户端，`ap daemon` 启动守护进程
 - PC 剪贴板文本**自动**同步到手机剪贴板（零点击）；图片自动同步默认关闭，配置 `[clipboard] auto_image = true` 开启
@@ -8,7 +8,7 @@
 - 文件传输：终端 `ap send` / 管道 stdin / 系统托盘 / 手机系统分享面板，四条入口
 - 手机掉线时 PC 只缓存**文件路径引用**（非文件本体），手机上线自动补发；队列不持久化，重启即丢，需重传
 - 全链路 TLS 1.3 双向证书认证，一次配对永久免配
-- 暂只支持单 PC ↔ 单手机；系统托盘图标暂用 emoji 占位
+- 暂只支持单 PC ↔ 单手机
 
 ## 架构
 
@@ -37,6 +37,7 @@ sequenceDiagram
 ```
 airpipe/          本仓库：总览 + 通信协议契约文档
 ├── docs/protocol.md   双端共同契约：传输/加密/配对/发现/帧协议
+├── assets/airpipe_logo.png  项目形象图标
 ├── pc/            submodule → ../airpipe-pc   (Rust, ap 命令 + daemon + 托盘)
 └── android/       submodule → ../airpipe-android (Kotlin, 无三方依赖)
 ```
@@ -74,6 +75,18 @@ adb shell appops set com.morethan.airpipe MANAGE_EXTERNAL_STORAGE allow
 ```
 
 通知权限需手动：设置 → 应用管理 → Airpipe → 通知管理 → 打开；省电策略设为「无限制」（否则后台 3 秒即冻结）。
+
+### 更换项目图标
+
+logo 源文件：`assets/airpipe_logo.png`（透明底，≥512px）。替换后重新生成两端派生图并重编：
+
+```bash
+cargo run --release --manifest-path tools/icongen/Cargo.toml
+```
+
+- PC：重写 `pc/assets/tray_icon.png`（256px），下次 `cargo build` 时 `build.rs` 自动重烘 32/64 托盘点阵
+- Android：重写 `res/mipmap-*/`（启动器 + 自适应前景）与 `res/drawable-*/ic_stat_airpipe.png`（通知剪影），重新 `assembleDebug`
+- 自适应图标底色在 `android/app/src/main/res/values/colors.xml`
 
 ## 自启动（systemd 用户服务）
 

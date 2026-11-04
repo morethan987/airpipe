@@ -1,0 +1,11 @@
+[package]
+name = "icongen"
+version = "0.1.0"
+edition = "2021"
+description = "Regenerate Airpipe icon rasters (pc tray source, android mipmaps) from assets/airpipe_logo.png"
+
+[dependencies]
+image = { version = "0.25", default-features = false, features = ["png"] }
+
+[profile.release]
+opt-level = 2
