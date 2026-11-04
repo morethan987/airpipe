@@ -22,8 +22,8 @@ sequenceDiagram
     A->>P: UDP 广播 AIRPIPE_DISCOVER
     P-->>A: AIRPIPE_PC <port> <指纹>
     A->>P: TCP + TLS 1.3（双向自签证书，配对后互相固定）
+    P-->>A: HELLO（TLS 完成即发；配对窗口期内手机消化它后等 A）
     A->>P: HELLO
-    P-->>A: HELLO
     loop 会话期
         P->>A: 心跳
         A-->>P: 应答
