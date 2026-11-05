@@ -21,9 +21,9 @@
 
 **Android 端**
 
-| App 主界面 | 常驻通知（点按即同步 / 进度条） |
-| :---: | :---: |
-| <img src="assets/android_app.jpg" width="260" alt="App 主界面与授权引导"> | <img src="assets/android_notification.jpg" width="260" alt="常驻通知"> |
+| App 主界面 | 常驻通知 | 状态栏磁贴 |
+| :---: | :---: | :---: |
+| <img src="assets/android_app.jpg" width="260" alt="App 主界面与授权引导"> | <img src="assets/android_notification.jpg" width="260" alt="常驻通知"> | <img src="assets/android_status_bar.jpg" width="260" alt="状态栏磁贴"> |
 
 ## 架构
 
