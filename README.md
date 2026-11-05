@@ -111,6 +111,8 @@ cargo run --release --manifest-path tools/icongen/Cargo.toml
 # ~/.config/systemd/user/airpipe.service
 [Unit]
 Description=Airpipe daemon (LAN clipboard & file sync)
+PartOf=graphical-session.target
+After=graphical-session.target
 
 [Service]
 ExecStart=%h/.local/bin/ap daemon
@@ -118,12 +120,17 @@ Restart=on-failure
 RestartSec=3
 
 [Install]
-WantedBy=default.target
+WantedBy=graphical-session.target
 ```
 
 ```bash
 systemctl --user enable --now airpipe
+# 曾在旧 [Install]（default.target）下 enable 过的，用 reenable 清掉旧软链，否则仍在登录时抢跑：
+systemctl --user reenable airpipe
 ```
+
+- `graphical-session.target` 保证拿到合成器就绪后的环境（`WAYLAND_DISPLAY`，剪贴板后端依赖）；纯监听服务无需 `network-online.target`，且用户级 unit 引用系统级 target 本就不生效
+- 托盘不依赖启动顺序：状态栏（SNI host，如 noctalia/waybar）晚于守护进程启动或中途重启时，自动等待并（重）注册图标
 
 ## 快速开始
 
