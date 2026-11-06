@@ -162,11 +162,11 @@ ap pair
 
 # 3. 传文件
 ap send photo.jpg docs/          # 文件/目录（递归；一律只落文件名/顶层目录名，不带父路径）
-ap send -c                       # 发送剪贴板复制的文件（等同托盘「发送剪贴板文件」）
+ap send -c                       # 发送剪贴板内容：复制的文件，或截图等图像（等同托盘「发送剪贴板内容」）
 tar czf - logs/ | ap send -      # 管道 stdin
 cat note.txt | ap text           # 文本直推手机剪贴板
 #    手机：文件管理器/相册 → 分享 → Airpipe → 落 PC ~/Airpipe/from_phone/
-#    PC 文件管理器复制文件 → 托盘菜单「发送剪贴板文件」或 ap send -c → 推到手机
+#    PC 复制文件 / 截图 → 托盘菜单「发送剪贴板内容」或 ap send -c → 推到手机（图像入手机相册）
 
 # 4. 状态
 ap status                        # 连接 / 队列 / 已配对设备

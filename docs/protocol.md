@@ -148,7 +148,7 @@ ap pair ──► 生成/复用身份证书
 优先级沿用 clipboard_probe 的分类结论：
 
 1. `x-kde-passwordManagerHint` → **敏感，不读不传**
-2. 文件引用（`x-special/gnome-copied-files` / `text/uri-list`）→ **不自动传**（仅托盘「发送剪贴板文件」显式触发）
+2. 文件引用（`x-special/gnome-copied-files` / `text/uri-list`）→ **不自动传**（仅托盘「发送剪贴板内容」/ `ap send -c` 显式触发）
 3. 图片（png > jpeg > webp > bmp > tiff，再退而求其次任意 `image/*`）→ 自动 `I` 帧，超 `MAX_IMAGE` 跳过并记日志
 4. 富文本 → 取 `text/plain` 渲染版发 `T`
 5. 纯文本 → `T`
@@ -174,8 +174,9 @@ Unix 域套接字：`$XDG_RUNTIME_DIR/airpipe/daemon.sock`（无 XDG_RUNTIME_DIR
 → {"cmd":"text","data":"hello"}
 ← {"ok":true}
 
-→ {"cmd":"send_clip_files"}          // 托盘同款：读剪贴板文件引用入队
-← {"ok":true,"queued":2,"online":false}
+→ {"cmd":"send_clipboard"}          // 托盘同款：文件引用优先，无则回退剪贴板图像
+← {"ok":true,"queued":2,"online":false}        // 文件引用命中
+← {"ok":true,"image":true,"mime":"image/png","size":482133,"online":false}  // 图像回退
 
 → {"cmd":"pair","timeout":60}        // 挂线等到结果或超时
 ← {"event":"code","code":"483920"}
@@ -193,3 +194,4 @@ Unix 域套接字：`$XDG_RUNTIME_DIR/airpipe/daemon.sock`（无 XDG_RUNTIME_DIR
 - 2026-11-06 v2：D 帧载荷加 `flags u8`（bit0 DF_ZSTD，逐块独立压缩、可逐块回退）；§6 新增文件级流水线窗口与传输压缩语义；PROTO_VER 1→2（破坏性，旧新互连版本拒绝）。动机与实测收益见 `transfer-perf.md`。
 - 2026-11-06 修正：§8 文件队列取消跨条目去重（原「同一路径重复入队去重」会在前一份仍在队列/在途时静默丢弃后续 `ap send`，造成文件丢失）；§10 send 系回复加 `online` 字段，CLI 据此显示手机在线/离线提示。
 - 2026-11-06 v2.1：新增 `G` BATCH_BEGIN 帧（双向，加性变更不升 PROTO_VER，旧端忽略未知帧）；§6 批量事件聚合语义。动机：PC→手机发文件夹/多文件时，手机端通知逐文件闪烁且常驻通知最终显示内部文件名——用户语义「一次发送 = 一个事件」。双向落地：手机端 `BatchStart` 入队划界（一次分享 = 一批，断线批保序重排），PC 端入站批聚合为一条桌面通知 + 一次剪贴板写入。
+- 2026-11-07 v2.2：§10 `send_clip_files` 更名 `send_clipboard` 并扩展语义：剪贴板无文件引用时回退发送最佳图像 rendition（截图场景），回复新增 `image`/`mime`/`size` 字段（命中图像时）；仅 PC 本机 IPC，不影响 PROTO_VER。
