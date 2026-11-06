@@ -137,7 +137,7 @@ ap pair ──► 生成/复用身份证书
 
 - 队列元素只有**引用**：文本为字节本体（小），文件为本地路径列表；绝不缓存文件内容。
 - 文本条目**合并**：多次文本同步只保留最新一条（剪贴板语义天然如此）。
-- 文件条目 FIFO；同一路径重复入队去重。
+- 文件条目 FIFO；单次入队内部去重，**跨条目不去重**（重复 `send` 同一路径 = 用户显式要求再送一份，接收端按 §7 追加序号，不覆盖）。
 - 队列**不持久化**：daemon / 系统重启即丢，用户重传——刻意设计，防止状态文件与磁盘实态漂移。
 - 手机上线（HELLO 完成）即按序清空队列；在线期间新入队条目即时唤醒泵发送（泵空闲时在队列条件变量上等待，不退出）。
 
@@ -167,13 +167,13 @@ Unix 域套接字：`$XDG_RUNTIME_DIR/airpipe/daemon.sock`（无 XDG_RUNTIME_DIR
    "queue":{"texts":1,"files":3,"bytes":1073741824},"paired":[...],"recv_dir":"...","port":17580}
 
 → {"cmd":"send","paths":["a.jpg","docs/"]}
-← {"ok":true,"queued":3}
+← {"ok":true,"queued":3,"online":true}
 
 → {"cmd":"text","data":"hello"}
 ← {"ok":true}
 
 → {"cmd":"send_clip_files"}          // 托盘同款：读剪贴板文件引用入队
-← {"ok":true,"queued":2}
+← {"ok":true,"queued":2,"online":false}
 
 → {"cmd":"pair","timeout":60}        // 挂线等到结果或超时
 ← {"event":"code","code":"483920"}
@@ -189,3 +189,4 @@ Unix 域套接字：`$XDG_RUNTIME_DIR/airpipe/daemon.sock`（无 XDG_RUNTIME_DIR
 
 - 2026-11-04 v1 初稿（审议中）
 - 2026-11-06 v2：D 帧载荷加 `flags u8`（bit0 DF_ZSTD，逐块独立压缩、可逐块回退）；§6 新增文件级流水线窗口与传输压缩语义；PROTO_VER 1→2（破坏性，旧新互连版本拒绝）。动机与实测收益见 `transfer-perf.md`。
+- 2026-11-06 修正：§8 文件队列取消跨条目去重（原「同一路径重复入队去重」会在前一份仍在队列/在途时静默丢弃后续 `ap send`，造成文件丢失）；§10 send 系回复加 `online` 字段，CLI 据此显示手机在线/离线提示。
