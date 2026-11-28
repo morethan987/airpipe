@@ -51,7 +51,7 @@ sequenceDiagram
     participant A as 手机 (Airpipe Android)
     participant P as PC (ap daemon, 监听)
     Note over A: 退避唤醒 / 新任务 nudge
-    A->>P: UDP 广播 AIRPIPE_DISCOVER
+    A->>P: UDP 单播探测记忆地址 / 广播 AIRPIPE_DISCOVER
     P-->>A: AIRPIPE_PC <port> <指纹>
     A->>P: TCP + TLS 1.3（双向自签证书，配对后互相固定）
     P-->>A: HELLO（TLS 完成即发；配对窗口期内手机消化它后等 A）
@@ -153,9 +153,11 @@ systemctl --user reenable airpipe
 ## 快速开始
 
 ```bash
-# 1. 配对（PC 端开 60 秒配对窗口，显示 6 位码）
+# 1. 配对（PC 端开 60 秒配对窗口，显示 6 位码与本机局域网地址）
 ap pair
 #    手机打开 Airpipe App → 输入 6 位码 → 完成，永久生效
+#    手机与 PC 不在同一网段（广播不可达）时，同时在「高级」里填入 ap pair 打印的地址；
+#    手机会记住它，之后自动重连（协议 §2）
 
 # 2. 日常：PC 复制文本，手机剪贴板自动出现
 #    手机复制文本 → 点一下常驻通知 → PC 剪贴板更新
